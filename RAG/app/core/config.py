@@ -59,4 +59,14 @@ class Settings:
         if not self.S3_BUCKET_NAME:
             logger.error("S3_BUCKET_NAME is not set in environment variables!")
 
+        # Maintenance endpoint (called periodically by a scheduled Lambda,
+        # not by end users) - a shared secret instead of a user JWT, since
+        # there's no "user" behind this call. Not the same secret as
+        # anything else; generate a separate random string for it.
+        self.INTERNAL_TASK_SECRET = os.getenv("INTERNAL_TASK_SECRET")
+        self.STALE_PROCESSING_MINUTES = int(os.getenv("STALE_PROCESSING_MINUTES", 30))
+
+        if not self.INTERNAL_TASK_SECRET:
+            logger.error("INTERNAL_TASK_SECRET is not set in environment variables!")
+
 settings = Settings()

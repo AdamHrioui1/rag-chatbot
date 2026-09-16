@@ -123,6 +123,14 @@ class DocumentService:
     def list_documents(self, user_id: str) -> list[dict]:
         return self.document_repository.list_for_user(user_id)
 
+    def cleanup_stale_processing(self) -> int:
+        """Marks documents stuck in "processing" for too long as
+        "failed". See DocumentRepository.mark_stale_processing_as_failed
+        for why this is needed."""
+        return self.document_repository.mark_stale_processing_as_failed(
+            older_than_minutes=settings.STALE_PROCESSING_MINUTES
+        )
+
     def delete_document(self, document_id: str, user_id: str) -> dict | None:
         """
         Deletes a document's vectors, physical file, and metadata.

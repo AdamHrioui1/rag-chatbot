@@ -111,3 +111,17 @@ def test_delete_document_removes_vectors_file_and_metadata(mock_delete_file):
     vector_store.delete.assert_called_once_with(where={"document_id": "doc1"})
     mock_delete_file.assert_called_once_with("user123/fake.txt")
     document_repository.delete.assert_called_once_with("doc1")
+
+
+def test_cleanup_stale_processing_uses_configured_threshold():
+    service, _, _, document_repository = make_service()
+    document_repository.mark_stale_processing_as_failed.return_value = 2
+
+    from app.core.config import settings
+
+    result = service.cleanup_stale_processing()
+
+    assert result == 2
+    document_repository.mark_stale_processing_as_failed.assert_called_once_with(
+        older_than_minutes=settings.STALE_PROCESSING_MINUTES
+    )

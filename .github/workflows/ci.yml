@@ -28,6 +28,7 @@ jobs:
       MONGO_URI: mongodb://localhost:27017
       MONGO_DB_NAME: test
       CHROMA_PATH: ./chroma_ci
+      INTERNAL_TASK_SECRET: test-internal-secret-used-only-in-ci
 
     steps:
       - name: Check out code

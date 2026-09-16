@@ -2,6 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
+from app.core.config import settings
 from app.core.dependencies import get_document_service, get_rag_service
 from app.core.auth_manual import verify_token_manual
 from app.exceptions.custom_exceptions import RAGException
@@ -153,3 +154,27 @@ def delete_document(
         raise HTTPException(status_code=404, detail="Document not found.")
 
     return {"success": True, "message": "Document deleted successfully."}
+
+
+@router.post('/internal/cleanup-stale-processing')
+def cleanup_stale_processing(
+    request: Request,
+    document_service: DocumentService = Depends(get_document_service),
+):
+    """
+    Maintenance endpoint, not for end users - marks any document stuck in
+    "processing" for too long (e.g. the server crashed mid-upload) as
+    "failed", so it doesn't sit stuck in the UI forever. Meant to be
+    called periodically by a scheduled Lambda function (EventBridge ->
+    Lambda -> this endpoint).
+
+    Authenticated by a shared secret rather than a user JWT, since
+    there's no "user" behind this call - just our own scheduled job.
+    """
+    provided_secret = request.headers.get("X-Internal-Secret")
+    if not provided_secret or provided_secret != settings.INTERNAL_TASK_SECRET:
+        raise HTTPException(status_code=401, detail="Not authorized.")
+
+    cleaned_up = document_service.cleanup_stale_processing()
+    logger.info(f"Cleanup: marked {cleaned_up} stale 'processing' document(s) as failed.")
+    return {"cleaned_up": cleaned_up}
