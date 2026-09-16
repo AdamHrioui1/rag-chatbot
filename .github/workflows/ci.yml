@@ -44,12 +44,18 @@ jobs:
         # Same reasoning as RAG/Dockerfile: a plain `pip install` on Linux
         # pulls the multi-GB CUDA build by default. GitHub's runners have
         # no GPU, so we install the small CPU-only build first.
+        #
+        # Note: no --no-cache-dir here (unlike the Dockerfile) - in
+        # Docker we skip pip's cache to keep the image small, but in CI
+        # we WANT pip to populate ~/.cache/pip, since that's exactly what
+        # the `cache: pip` option above saves and restores between runs
+        # to speed up future builds.
         working-directory: RAG
-        run: pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
 
       - name: Install dependencies
         working-directory: RAG
-        run: pip install --no-cache-dir -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run tests
         working-directory: RAG
