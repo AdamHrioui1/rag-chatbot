@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Markdown from 'react-markdown'
@@ -17,7 +17,6 @@ function ChatMessages(props) {
     const navigate = useNavigate()
     const params = useParams()
     const bottomRef = useRef(null)
-    const [Key, setKey] = useState('')
 
     const fileIcon = (mimetype) => {
         if(mimetype === 'application/pdf') return <BiSolidFilePdf />
@@ -98,7 +97,11 @@ function ChatMessages(props) {
     useEffect(() => {
         setMessages([])
         if(params.id && UserCookie) sendAndGetMessages()
-    }, [params.id, UserCookie])
+        // sendAndGetMessages/setMessages are omitted intentionally:
+        // sendAndGetMessages is redefined on every render (it closes over
+        // location/params/UserCookie), so adding it would run this effect
+        // on every render instead of only when params.id/UserCookie change.
+    }, [params.id, UserCookie]) // eslint-disable-line react-hooks/exhaustive-deps
     
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" })

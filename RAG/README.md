@@ -98,8 +98,12 @@ uvicorn app.main:app --reload --port 8000
 ## Testing
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
+
+(`python -m pytest`, not the bare `pytest` command - see `pytest.ini`. The
+`-m` form is what reliably picks up the same Python environment you just
+activated, regardless of what else might be on your PATH.)
 
 44 tests covering: JWT enforcement on every route, request validation,
 chunking edge cases, extraction of real DOCX/corrupted PDF/unsupported
