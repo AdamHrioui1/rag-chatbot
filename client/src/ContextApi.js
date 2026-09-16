@@ -12,7 +12,7 @@ export let ContextProvider = ({ children }) => {
     const [CallBack, setCallBack] = useState(false)
 
     const cookies = new Cookies(null, { path: '/' })
-    
+
     useEffect(() => {
         let cookie = cookies.get('accesstoken')
         if(cookie && cookie.length > 170) {
@@ -33,7 +33,10 @@ export let ContextProvider = ({ children }) => {
             }
             getUser()
         }
-    }, [CallBack])
+        // `cookies` is a new instance every render (not memoized), so
+        // adding it here would re-run this effect on every render
+        // instead of only when CallBack changes - intentional omission.
+    }, [CallBack]) // eslint-disable-line react-hooks/exhaustive-deps
 
     let hideSidebarHandler = () => setHideSidebar(!HideSidebar)
     

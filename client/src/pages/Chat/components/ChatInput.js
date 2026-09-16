@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { TiDelete } from "react-icons/ti";
-import { RiAttachment2 } from "react-icons/ri";
 import { RiSendPlaneFill } from "react-icons/ri";
 import { FaSquare } from "react-icons/fa6";
 import { useContextApi } from '../../../ContextApi';
 
 function ChatInput(props) {
-    const { newChat, Messages, setMessages, Thinking, setThinking } = props
+    const { newChat, setMessages, Thinking, setThinking } = props
     const state = useContextApi()
     const [UserCookie] = state.UserCookie
     const [CallBack, setCallBack] = state.CallBack
     const [Prompt, setPrompt] = useState('')
-    const [File, setFile] = useState('')
-    const [Mimetype, setMimetype] = useState('')
+    const [File] = useState('')
+    const [Mimetype] = useState('')
     const navigate = useNavigate();
     const params = useParams()
 

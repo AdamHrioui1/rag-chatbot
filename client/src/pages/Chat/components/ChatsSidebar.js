@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { LuMessageCirclePlus } from "react-icons/lu";
 import { HiOutlineDocumentText } from "react-icons/hi";
-import { FiSearch } from "react-icons/fi";
 import { TbLayoutSidebarLeftCollapseFilled } from "react-icons/tb";
 import { HiOutlineLogout } from "react-icons/hi";
 import orb2 from "../../../assets/orb2.gif";
@@ -16,23 +15,21 @@ function ChatsSidebar() {
     let [HideSidebar, setHideSidebar] = state.HideSidebar
     let [UserCookie] = state.UserCookie
     let hideSidebarHandler = state.hideSidebarHandler
-    let [User] = state.User
-    const [Chats, setChats] = state.Chats
+    const [Chats] = state.Chats
     const [CallBack, setCallBack] = state.CallBack
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     const cookies = new Cookies(null, { path: '/' })
 
     let deleteChatHandler = async id => {
         if(window.confirm('Are you sure you want to delete this chat?')) {
             try {
-                let res = await axios.delete(`http://localhost:5000/api/v1/chat/${id}`, {
+                await axios.delete(`http://localhost:5000/api/v1/chat/${id}`, {
                     headers: {
                         'Authorization': UserCookie,
                         'Content-Type': 'application/json'
                     }
                 })
-                
+
                 setCallBack(!CallBack)
             } catch (error) {
                 console.log(error);
@@ -62,7 +59,7 @@ function ChatsSidebar() {
             window.removeEventListener('resize', handleResize);
             clearTimeout(timeoutId);
         };
-    }, []);
+    }, [setHideSidebar]);
 
     return (
         <div className={`sidebar ${HideSidebar ? 'inactive' : 'active'}`}>
