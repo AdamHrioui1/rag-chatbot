@@ -28,7 +28,7 @@ app.include_router(router)
 @app.get('/')
 def root():
     return {
-        "message": "Hello world!"
+        "message": "RAG Chatbot API is live on AWS EC2"
     }
 
 @app.get('/health')
