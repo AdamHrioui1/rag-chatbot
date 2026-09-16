@@ -1,0 +1,33 @@
+services:
+  rag:
+    build: ./RAG
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./RAG/.env
+    volumes:
+      # Bind mounts: map a folder on YOUR disk into the container, at the
+      # same path the app already reads/writes (STORAGE_PATH=storage,
+      # CHROMA_PATH=chroma in RAG/.env). Without this, anything written
+      # inside the container disappears the moment the container is
+      # removed - a container's own filesystem is thrown away with it.
+      # A bind mount (rather than a Docker-managed "named volume") was
+      # chosen because it's just an ordinary folder on your machine that
+      # you can open and inspect directly, which is easier to reason
+      # about than an opaque Docker-managed volume.
+      - ./RAG/chroma:/app/chroma
+      - ./RAG/storage:/app/storage
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    environment:
+      # Overrides RAG_API_URL from server/.env: inside this Docker
+      # network, the RAG service is reachable at the hostname "rag"
+      # (its service name above), not "localhost".
+      - RAG_API_URL=http://rag:8000/chat
+    depends_on:
+      - rag

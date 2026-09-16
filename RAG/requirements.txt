@@ -1,0 +1,24 @@
+# --- Web framework ---
+fastapi==0.139.0
+uvicorn==0.50.0
+python-multipart==0.0.20   # required by FastAPI to parse file uploads (UploadFile)
+
+# --- Config / auth ---
+python-dotenv==1.2.2
+pyjwt==2.13.0
+
+# --- RAG core ---
+sentence-transformers==5.6.0
+chromadb==1.5.9
+openai==2.44.0              # OpenAI-compatible client, used to call the DeepSeek API
+
+# --- Document extraction (new: needed for PDF/DOCX ingestion) ---
+pypdf==5.1.0
+python-docx==1.1.2
+
+# --- Document metadata storage (new: same MongoDB the Node server uses) ---
+pymongo==4.9.2
+
+# --- Testing ---
+pytest==9.1.1
+pytest-mock==3.15.1

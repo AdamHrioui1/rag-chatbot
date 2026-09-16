@@ -1,0 +1,27 @@
+# --- Secrets: never commit real environment files ---
+.env
+.env.local
+.env.*.local
+
+# --- Node (client + server) ---
+node_modules/
+npm-debug.log*
+/client/build/
+
+# --- Python (RAG) ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# --- Local data (must persist on disk, must never be committed) ---
+RAG/chroma/
+RAG/storage/
+
+# --- Editor / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
