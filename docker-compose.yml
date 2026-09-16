@@ -6,17 +6,16 @@ services:
     env_file:
       - ./RAG/.env
     volumes:
-      # Bind mounts: map a folder on YOUR disk into the container, at the
-      # same path the app already reads/writes (STORAGE_PATH=storage,
-      # CHROMA_PATH=chroma in RAG/.env). Without this, anything written
-      # inside the container disappears the moment the container is
-      # removed - a container's own filesystem is thrown away with it.
-      # A bind mount (rather than a Docker-managed "named volume") was
-      # chosen because it's just an ordinary folder on your machine that
-      # you can open and inspect directly, which is easier to reason
-      # about than an opaque Docker-managed volume.
+      # Bind mount: maps a folder on YOUR disk into the container, at the
+      # same path the app reads/writes (CHROMA_PATH=chroma in RAG/.env).
+      # Without this, anything written inside the container disappears
+      # the moment the container is removed - a container's own
+      # filesystem is thrown away with it. A bind mount (rather than a
+      # Docker-managed "named volume") was chosen because it's just an
+      # ordinary folder on your machine you can open and inspect
+      # directly. Uploaded document *files* no longer need a mount here -
+      # they live in S3 now, which is already durable on its own.
       - ./RAG/chroma:/app/chroma
-      - ./RAG/storage:/app/storage
 
   server:
     build: ./server

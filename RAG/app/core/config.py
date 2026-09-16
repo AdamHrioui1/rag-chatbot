@@ -34,8 +34,11 @@ class Settings:
             if origin.strip()
         ]
 
-        # Document ingestion
-        self.STORAGE_PATH = os.getenv("STORAGE_PATH", "storage")
+        # Document ingestion - files live in S3, not local disk (see
+        # app/services/storage.py). AWS_REGION must match the bucket's
+        # actual region.
+        self.S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+        self.AWS_REGION = os.getenv("AWS_REGION", "eu-north-1")
         self.CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
         self.CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 150))
         self.MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", 15))
@@ -52,5 +55,8 @@ class Settings:
 
         if not self.MONGO_URI:
             logger.error("MONGO_URI is not set in environment variables!")
+
+        if not self.S3_BUCKET_NAME:
+            logger.error("S3_BUCKET_NAME is not set in environment variables!")
 
 settings = Settings()
