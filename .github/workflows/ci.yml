@@ -116,3 +116,28 @@ jobs:
       - name: Build
         working-directory: client
         run: npm run build
+
+  # --- Deploy: only after everything above passes, and only for an
+  # actual merge to main (never for a pull request - nothing should
+  # reach the server until code is actually merged). ---
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: [rag-tests, server-install, client-build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          # Exactly the two commands we already proved work by hand:
+          # pull the latest merged code, then rebuild/restart whatever
+          # changed. Docker's build cache lives on the server itself (not
+          # on the GitHub runner), so a deploy where dependencies didn't
+          # change is fast - only the actual changed layers rebuild.
+          script: |
+            cd ~/rag-chatbot
+            git pull origin main
+            docker compose up -d --build
