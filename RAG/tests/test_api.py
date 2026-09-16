@@ -158,3 +158,35 @@ def test_upload_reports_per_file_failure_without_500():
     assert "not supported" in body["results"][0]["error"]
 
     del app.dependency_overrides[get_document_service]
+
+
+# --- Internal maintenance endpoint (called by the scheduled Lambda) ---
+
+
+def test_cleanup_stale_processing_requires_the_shared_secret():
+    response = client.post("/internal/cleanup-stale-processing")
+    assert response.status_code == 401
+
+
+def test_cleanup_stale_processing_rejects_wrong_secret():
+    response = client.post(
+        "/internal/cleanup-stale-processing",
+        headers={"X-Internal-Secret": "wrong-secret"},
+    )
+    assert response.status_code == 401
+
+
+def test_cleanup_stale_processing_succeeds_with_correct_secret():
+    service = Mock()
+    service.cleanup_stale_processing.return_value = 3
+    app.dependency_overrides[get_document_service] = lambda: service
+
+    response = client.post(
+        "/internal/cleanup-stale-processing",
+        headers={"X-Internal-Secret": settings.INTERNAL_TASK_SECRET},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"cleaned_up": 3}
+
+    del app.dependency_overrides[get_document_service]

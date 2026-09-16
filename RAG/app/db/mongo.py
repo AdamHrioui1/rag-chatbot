@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -115,6 +115,34 @@ class DocumentRepository:
 
     def delete(self, document_id: str) -> None:
         documents_collection.delete_one({"_id": ObjectId(document_id)})
+
+    def mark_stale_processing_as_failed(self, older_than_minutes: int) -> int:
+        """
+        Finds documents stuck in "processing" for longer than the given
+        threshold and marks them "failed". This exists for one specific
+        failure mode: if the server crashes or is killed mid-upload (e.g.
+        an out-of-memory kill while embedding a document), that document's
+        status is never updated past "processing" - nothing else in the
+        system would ever notice or fix it on its own. Called
+        periodically by a scheduled Lambda function hitting a maintenance
+        endpoint (see app/api/routes.py).
+
+        Returns how many documents were cleaned up, for logging.
+        """
+        cutoff = datetime.now(timezone.utc) - timedelta(minutes=older_than_minutes)
+        result = documents_collection.update_many(
+            {"status": "processing", "created_at": {"$lt": cutoff}},
+            {
+                "$set": {
+                    "status": "failed",
+                    "error_message": (
+                        "Processing timed out unexpectedly (the server may have "
+                        "restarted mid-upload). Please delete and re-upload this document."
+                    ),
+                }
+            },
+        )
+        return result.modified_count
 
 
 document_repository = DocumentRepository()
