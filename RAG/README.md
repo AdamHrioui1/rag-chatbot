@@ -17,7 +17,7 @@ React client ──► Node/Express (auth, chat history) ──► FastAPI (this
                                                               │
                                                     MongoDB (document metadata)
                                                     ChromaDB (vectors, local disk)
-                                                    ./storage (raw files, local disk)
+                                                    S3 (raw uploaded files)
 ```
 
 ## Pipeline
@@ -26,7 +26,7 @@ React client ──► Node/Express (auth, chat history) ──► FastAPI (this
 ```
 file(s) or .zip
   -> validate (extension, size, not empty)
-  -> save raw file to disk (storage.py)
+  -> save raw file to S3 (storage.py)
   -> extract text (extractors.py: pypdf / python-docx / plain text)
   -> clean + chunk text (chunker.py)
   -> embed each chunk (sentence-transformers/all-MiniLM-L6-v2)
@@ -82,7 +82,8 @@ that file).
 | `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_MODEL` | LLM credentials (OpenAI-compatible API) |
 | `ACCESS_TOKEN_SECRET` | Must match the Node server's JWT secret |
 | `MONGO_URI`, `MONGO_DB_NAME` | Same MongoDB the Node server uses (separate `documents` collection) |
-| `STORAGE_PATH` | Local folder for raw uploaded files (default `storage`) |
+| `S3_BUCKET_NAME`, `AWS_REGION` | Where raw uploaded files are stored |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | Local development only - leave unset on EC2, which uses the instance's IAM role instead |
 | `CHUNK_SIZE`, `CHUNK_OVERLAP` | Chunking - see comments in `.env` for the reasoning |
 | `TOP_K` | How many chunks to retrieve per question |
 | `SIMILARITY_THRESHOLD` | Cosine distance cutoff for a chunk to count as relevant - calibrated empirically, see `.env` comments |
@@ -129,6 +130,7 @@ limitations" note below).
   database name is given in the connection string used by the Node
   server. Fine for a shared dev database; worth naming explicitly before
   any real deployment.
-- File storage is local disk (`RAG/storage/`), not yet object storage.
-  This is intentional for now - see the project's AWS phase for the S3
-  migration plan.
+- The vector store (ChromaDB) still lives on local disk on the EC2
+  instance, not S3 - only raw uploaded files were migrated. Losing the
+  instance would mean re-uploading documents to rebuild the vector
+  index, even though the original files themselves would survive in S3.

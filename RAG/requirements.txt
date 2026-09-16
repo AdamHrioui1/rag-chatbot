@@ -19,6 +19,10 @@ python-docx==1.1.2
 # --- Document metadata storage (new: same MongoDB the Node server uses) ---
 pymongo==4.9.2
 
+# --- Document file storage (new: S3, via the EC2 instance's IAM role or
+# local AWS credentials - see app/services/storage.py) ---
+boto3==1.43.96
+
 # --- Testing ---
 pytest==9.1.1
 pytest-mock==3.15.1
