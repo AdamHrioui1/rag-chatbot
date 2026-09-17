@@ -4,6 +4,7 @@ import axios from 'axios';
 import { RiSendPlaneFill } from "react-icons/ri";
 import { FaSquare } from "react-icons/fa6";
 import { useContextApi } from '../../../ContextApi';
+import { SERVER_API_URL } from '../../../config';
 
 function ChatInput(props) {
     const { newChat, setMessages, Thinking, setThinking } = props
@@ -34,7 +35,7 @@ function ChatInput(props) {
             if(UserCookie) {
                 try {
                     setThinking(true)
-                    const res = await axios.post('http://localhost:5000/api/v1/chat/new', {
+                    const res = await axios.post(`${SERVER_API_URL}/api/v1/chat/new`, {
                         prompt: Prompt, 
                         file: File, 
                         mimetype: Mimetype
@@ -68,8 +69,8 @@ function ChatInput(props) {
             if(params.id && UserCookie) {
                 try {
                     setThinking(true)
-                    const res = await axios.put(`http://localhost:5000/api/v1/chat/${params?.id}`, {
-                        prompt: prompt, 
+                    const res = await axios.put(`${SERVER_API_URL}/api/v1/chat/${params?.id}`, {
+                        prompt: prompt,
                         file: '', 
                         mimetype: ''
                     }, {

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
+import { SERVER_API_URL } from "./config";
 
 export let ContextApi = createContext()
 
@@ -20,7 +21,7 @@ export let ContextProvider = ({ children }) => {
 
             let getUser = async () => {
                 try {
-                    let res = await axios.get('http://localhost:5000/api/v1/user/info', {
+                    let res = await axios.get(`${SERVER_API_URL}/api/v1/user/info`, {
                         headers: {
                             'Authorization': cookie
                         }

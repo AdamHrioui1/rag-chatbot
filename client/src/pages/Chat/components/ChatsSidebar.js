@@ -6,6 +6,7 @@ import { TbLayoutSidebarLeftCollapseFilled } from "react-icons/tb";
 import { HiOutlineLogout } from "react-icons/hi";
 import orb2 from "../../../assets/orb2.gif";
 import { useContextApi } from '../../../ContextApi';
+import { SERVER_API_URL } from '../../../config';
 import Cookies from 'universal-cookie';
 import axios from 'axios';
 import { IoMdTrash } from "react-icons/io";
@@ -23,7 +24,7 @@ function ChatsSidebar() {
     let deleteChatHandler = async id => {
         if(window.confirm('Are you sure you want to delete this chat?')) {
             try {
-                await axios.delete(`http://localhost:5000/api/v1/chat/${id}`, {
+                await axios.delete(`${SERVER_API_URL}/api/v1/chat/${id}`, {
                     headers: {
                         'Authorization': UserCookie,
                         'Content-Type': 'application/json'

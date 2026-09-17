@@ -7,6 +7,7 @@ import { RiFileWord2Fill } from "react-icons/ri";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import { PiMicrosoftPowerpointLogoFill } from "react-icons/pi";
 import { useContextApi } from '../../../ContextApi';
+import { SERVER_API_URL } from '../../../config';
 import orb2 from "../../../assets/orb2.gif";
 
 function ChatMessages(props) {
@@ -45,7 +46,7 @@ function ChatMessages(props) {
                 setMessages([userMessage])
                 try {
                     setThinking(true)
-                    let res = await axios.put(`http://localhost:5000/api/v1/chat/${params?.id}`, {
+                    let res = await axios.put(`${SERVER_API_URL}/api/v1/chat/${params?.id}`, {
                         prompt: userData?.prompt, 
                         file: userData?.file || '', 
                         mimetype: userData?.mimetype || ''
@@ -75,7 +76,7 @@ function ChatMessages(props) {
             else {
                 if(params?.id && UserCookie) {
                     try {
-                        let res = await axios.get(`http://localhost:5000/api/v1/chat/${params?.id}`, {
+                        let res = await axios.get(`${SERVER_API_URL}/api/v1/chat/${params?.id}`, {
                             headers: {
                                 'Authorization': UserCookie,
                                 'Content-Type': 'application/json'

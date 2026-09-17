@@ -2,6 +2,7 @@ import axios from 'axios'
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import orb2 from '../../assets/orb2.gif'
+import { SERVER_API_URL } from '../../config'
 
 function Activate() {
     let navigate = useNavigate()
@@ -9,7 +10,7 @@ function Activate() {
 
     const handleActivate = async () => {
         try {
-        const res = await axios.post('http://localhost:5000/api/v1/user/activate', {
+        const res = await axios.post(`${SERVER_API_URL}/api/v1/user/activate`, {
             activationToken: activationToken
         })
 
