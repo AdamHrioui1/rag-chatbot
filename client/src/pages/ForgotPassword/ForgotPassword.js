@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import orb2 from '../../assets/orb2.gif'
+import { SERVER_API_URL } from '../../config'
 
 function ForgotPassword() {
     let navigate = useNavigate()
@@ -14,7 +15,7 @@ function ForgotPassword() {
         try {
             if(!Email) return setError('Please enter your Email!')
 
-            await axios.post('http://localhost:5000/api/v1/user/forgot', {
+            await axios.post(`${SERVER_API_URL}/api/v1/user/forgot`, {
                 email: Email
             })
             navigate('/checkforpassword')

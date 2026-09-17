@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import orb2 from '../../assets/orb2.gif'
 import axios from 'axios'
+import { SERVER_API_URL } from '../../config'
 
 function Register() {
     const [Error, setError] = useState('')
@@ -12,7 +13,7 @@ function Register() {
     let submitHandler = async e => {
         e.preventDefault()
         try {
-            let res = await axios.post('http://localhost:5000/api/v1/user/register', {
+            let res = await axios.post(`${SERVER_API_URL}/api/v1/user/register`, {
                 username: Username,
                 email: Email, 
                 password: Password,

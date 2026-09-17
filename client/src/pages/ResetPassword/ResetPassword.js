@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import orb2 from '../../assets/orb2.gif'
+import { SERVER_API_URL } from '../../config'
 
 function ResetPassword() {
     const { accesstoken } = useParams()
@@ -34,7 +35,7 @@ function ResetPassword() {
                 return setLoading(false)
             }
 
-            await axios.post('http://localhost:5000/api/v1/user/reset', { 
+            await axios.post(`${SERVER_API_URL}/api/v1/user/reset`, {
                 password: Password, 
                 confirmPassword: ConfirmPassword 
             }, {

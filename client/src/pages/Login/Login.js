@@ -3,6 +3,7 @@ import axios from 'axios'
 import Cookies from 'universal-cookie'
 import { Link, useNavigate } from 'react-router-dom'
 import orb2 from '../../assets/orb2.gif'
+import { SERVER_API_URL } from '../../config'
 import './Login.css'
 
 function Login() {
@@ -17,7 +18,7 @@ function Login() {
         setLoading(true)
 
         try {
-            let res = await axios.post('http://localhost:5000/api/v1/user/login', {
+            let res = await axios.post(`${SERVER_API_URL}/api/v1/user/login`, {
                 email: Email,
                 password: Password
             })
